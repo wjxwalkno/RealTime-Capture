@@ -1,0 +1,107 @@
+﻿Build started 2015/10/15 15:28:07.
+Environment at start of build:
+ADSK_3DSMAX_x64_2015 = C:\Program Files\Autodesk\3ds Max 2015\
+ALLUSERSPROFILE = C:\ProgramData
+ANDROID_SDK_HOME = C:\android_work\AVD
+APPDATA = C:\Users\Administrator\AppData\Roaming
+asl.log = Destination=file
+CLASSPATH = I:\JDK\lib\tools.jar;I:\JDK\lib\dt.jar;I:\JDK program of 3d1116\lib\dt.jar;I:\JDK program of 3d1116\lib\tools.jar;C:\Program Files\OpenNI\Bin64\org.OpenNI.jar;
+CM2015DIR = C:\Program Files (x86)\Common Files\Autodesk Shared\Materials\
+CommonProgramFiles = C:\Program Files (x86)\Common Files
+CommonProgramFiles(x86) = C:\Program Files (x86)\Common Files
+CommonProgramW6432 = C:\Program Files\Common Files
+COMPLUS_InstallRoot = 
+COMPLUS_Version = 
+COMPUTERNAME = WIN-FUG1F8GCRJ0
+ComSpec = C:\Windows\system32\cmd.exe
+CUDA_PATH = C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.0\
+CUDA_PATH_V5_0 = C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.0\
+FP_NO_HOST_CHECK = NO
+HOMEDRIVE = C:
+HOMEPATH = \Users\Administrator
+ILMDIR = C:\Program Files (x86)\Common Files\Autodesk Shared\Materials\
+LOCALAPPDATA = C:\Users\Administrator\AppData\Local
+LOGONSERVER = \\WIN-FUG1F8GCRJ0
+MOZ_PLUGIN_PATH = D:\FoxitReade\Foxit Reader\plugins\
+NUMBER_OF_PROCESSORS = 12
+NVCUDASAMPLES5_0_ROOT = C:\ProgramData\NVIDIA Corporation\CUDA Samples\v5.0\
+NVCUDASAMPLES_ROOT = C:\ProgramData\NVIDIA Corporation\CUDA Samples\v5.0\
+NVTOOLSEXT_PATH = C:\Program Files\NVIDIA GPU Computing Toolkit\nvToolsExt\
+OPENCV_DIR = D:\Program Files\opencv242
+OPEN_NI_BIN64 = C:\Program Files\OpenNI\Bin64
+OPEN_NI_INCLUDE = C:\Program Files\OpenNI\Include
+OPEN_NI_INSTALL_PATH64 = C:\Program Files\OpenNI\
+OPEN_NI_LIB64 = C:\Program Files\OpenNI\Lib64
+OS = Windows_NT
+Path = C:\Program Files (x86)\Common Files\Raytrix Shared\Bin\;C:\Program Files\Raytrix\Bin\;C:\Program Files (x86)\Common Files\Raytrix Shared\Bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Program Files (x86)\Common Files\Thunder Network\KanKan\Codecs;C:\Program Files (x86)\Common Files\Ulead Systems\MPEG\;D:\OpenCV\opencv\build\x86\vc10\bin;D:\OpenCV\opencv\build\x64\vc10\bin;E:\opencv\build\x86\vc10\bin;E:\opencv\build\x64\vc10\bin;D:\Program Files\opencv242\build\x86\vc10\bin;D:\Program Files\opencv242\build\x64\vc10\bin;E:\opencv\build\x86\vc10\bin;E:\opencv\build\common\tbb\ia32\vc10;I:\JDK program of 3d1116\bin;
+PATHEXT = .COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC
+PROCESSOR_ARCHITECTURE = x86
+PROCESSOR_ARCHITEW6432 = AMD64
+PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 44 Stepping 2, GenuineIntel
+PROCESSOR_LEVEL = 6
+PROCESSOR_REVISION = 2c02
+ProgramData = C:\ProgramData
+ProgramFiles = C:\Program Files (x86)
+ProgramFiles(x86) = C:\Program Files (x86)
+ProgramW6432 = C:\Program Files
+PSModulePath = C:\Windows\system32\WindowsPowerShell\v1.0\Modules\
+PUBLIC = C:\Users\Public
+RX_PATH_APILF_3_1 = C:\Users\Public\Documents\Raytrix\Light Field SDK 3.1\
+RX_PATH_RAYCAM = C:\Program Files (x86)\Raytrix\RayCam\SDK 4.1\
+SESSIONNAME = Console
+SystemDrive = C:
+SystemRoot = C:\Windows
+TEMP = C:\Users\ADMINI~1\AppData\Local\Temp
+TMP = C:\Users\ADMINI~1\AppData\Local\Temp
+USERDOMAIN = WIN-FUG1F8GCRJ0
+USERNAME = Administrator
+USERPROFILE = C:\Users\Administrator
+VBOX_MSI_INSTALL_PATH = C:\Program Files\Oracle\VirtualBox\
+VisualStudioDir = C:\Users\Administrator\Documents\Visual Studio 2010
+VS100COMNTOOLS = C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools\
+windir = C:\Windows
+
+     1>Project "C:\Users\Administrator\Desktop\中航项目\RealTime Capture\MultiView.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "x64\Debug\MultiView.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         All outputs are up-to-date.
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\CL.exe /c /I"C:\Program Files\Point Grey Research\FlyCapture2\include\C" /I"C:\Program Files\Point Grey Research\FlyCapture2\include" /Zi /nologo /W3 /WX- /Od /D WIN32 /D _WINDOWS /D _DEBUG /D _MBCS /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"x64\Debug\MultiView.pch" /Fo"x64\Debug\\" /Fd"x64\Debug\vc100.pdb" /Gd /TP /errorReport:prompt MultiViewDlg.cpp
+         MultiViewDlg.cpp
+     1>c:\users\administrator\desktop\中航项目\realtime capture\DibShow.h(32): warning C4520: 'CDibShow' : multiple default constructors specified
+     1>MultiViewDlg.cpp(429): warning C4018: '<' : signed/unsigned mismatch
+     1>MultiViewDlg.cpp(576): warning C4154: deletion of an array expression; conversion to pointer supplied
+     1>MultiViewDlg.cpp(588): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>MultiViewDlg.cpp(588): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>MultiViewDlg.cpp(704): warning C4018: '<' : signed/unsigned mismatch
+     1>MultiViewDlg.cpp(734): warning C4018: '<' : signed/unsigned mismatch
+     1>MultiViewDlg.cpp(742): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371) : see declaration of 'sprintf'
+       ResourceCompile:
+         All outputs are up-to-date.
+       ManifestResourceCompile:
+         All outputs are up-to-date.
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Administrator\Desktop\中航项目\RealTime Capture\x64\Debug\MultiView.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Program Files\Point Grey Research\FlyCapture2\lib64" FlyCapture2.lib vfw32.lib FlyCapture2GUI.lib opencv_calib3d248d.lib opencv_contrib248d.lib opencv_core248d.lib opencv_features2d248d.lib opencv_flann248d.lib opencv_gpu248d.lib opencv_highgui248d.lib opencv_imgproc248d.lib opencv_legacy248d.lib opencv_ml248d.lib opencv_objdetect248d.lib opencv_ts248d.lib opencv_video248d.lib /MANIFEST /ManifestFile:"x64\Debug\MultiView.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\Administrator\Desktop\中航项目\RealTime Capture\x64\Debug\MultiView.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Administrator\Desktop\中航项目\RealTime Capture\x64\Debug\MultiView.lib" /MACHINE:X64 x64\Debug\MultiView.res
+         x64\Debug\MultiView.exe.embed.manifest.res
+         x64\Debug\BinocularCamera.obj
+         x64\Debug\DibShow.obj
+         x64\Debug\MultiView.obj
+         x64\Debug\MultiViewDlg.obj
+         x64\Debug\stdafx.obj
+         x64\Debug\TimeMeasure.obj
+         MultiView.vcxproj -> C:\Users\Administrator\Desktop\中航项目\RealTime Capture\x64\Debug\MultiView.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"x64\Debug\MultiView.exe.embed.manifest" /manifest x64\Debug\MultiView.exe.intermediate.manifest "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\Include\Manifest\dpiaware.manifest"
+         All outputs are up-to-date.
+       LinkEmbedManifest:
+         All outputs are up-to-date.
+         MultiView.vcxproj -> C:\Users\Administrator\Desktop\中航项目\RealTime Capture\x64\Debug\MultiView.exe
+       FinalizeBuildStatus:
+         Deleting file "x64\Debug\MultiView.unsuccessfulbuild".
+         Touching "x64\Debug\MultiView.lastbuildstate".
+     1>Done Building Project "C:\Users\Administrator\Desktop\中航项目\RealTime Capture\MultiView.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:02.72
