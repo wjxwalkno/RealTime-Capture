@@ -252,6 +252,10 @@ CMultiViewDlg::CMultiViewDlg(CWnd* pParent /*=NULL*/)
 
 	is_open = false;
 	is_start = false;
+	isQuited = false;
+
+	flag_quit = 1;
+
 
 
 }
@@ -271,6 +275,7 @@ BEGIN_MESSAGE_MAP(CMultiViewDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_STOP, &CMultiViewDlg::OnBnClickedBtnStop)
 	ON_BN_CLICKED(IDC_BTN_START, &CMultiViewDlg::OnBnClickedBtnStart)
 	ON_BN_CLICKED(IDC_BTN_GRAP, &CMultiViewDlg::OnBnClickedBtnGrap)
+	ON_BN_CLICKED(IDC_BTN_OUT, &CMultiViewDlg::OnBnClickedBtnOut)
 END_MESSAGE_MAP()
 // CMultiViewDlg message handlers
 
@@ -362,25 +367,22 @@ HCURSOR CMultiViewDlg::OnQueryDragIcon()
 void CMultiViewDlg::OnBnClickedBtnQuit()
 {
 	// TODO: Add your control notification handler code here
-	
-
-	//OnBnClickedBtnStop();
+	ResetEvent(g_hEvent);
+	//ResetEvent(g_hEvent0);
+	//ResetEvent(g_hEvent1);
+	isQuited = true;
 	m_bCaptureThread0 = false;
 	m_bCaptureThread1 = false;
 	//m_bCapture = false;
-	//for ( unsigned int i = 0; i < numCameras; i++ )
-	//{
+	//SetEvent(g_hEvent);
+	//SetEvent(g_hEvent0);
+	//SetEvent(g_hEvent1);
+
+	//for ( unsigned int i = 0; i < numCameras; i++ )	
 	//	ppCameras[i] = 0;
-	////	ppCameras[i]->Disconnect();
-	////	delete ppCameras[i];
-	//}
 
-	//delete [] ppCameras;
-	CloseHandle(hThread) ;
-	CloseHandle(hThread0) ;
-	CloseHandle(hThread1) ;
 
-	this->OnOK() ;
+	//CDialog::OnCancel();
 }
 
 
@@ -425,6 +427,7 @@ void CMultiViewDlg::OnLButtonDblClk(UINT nFlags, CPoint point)
 void CMultiViewDlg::OnBnClickedBtnInitsystem()
 {
 	// TODO: Add your control notification handler code here
+	flag_quit = 1;
 
 	for(int i=0;i<numCameras;i++)
 	{
@@ -489,38 +492,19 @@ void CMultiViewDlg::OnBnClickedBtnStop()
 	
 	if (m_temp)
 	{
+		flag_quit = 3;
+
 		SetDlgItemTextA(IDC_BTN_STOP,"开始");
 		ResetEvent(g_hEvent);
 
 	}
 	else
 	{
-		SetDlgItemTextA(IDC_BTN_STOP,"停止");
+		SetDlgItemTextA(IDC_BTN_STOP,"暂停");
 		SetEvent(g_hEvent);
 	}
 	m_temp = !m_temp;
-	
 
-	//Error   error;
-
-	//m_bCapture = false;
-
-
-	//if (is_start == true)
-	//{
-	//	is_start = false;
-	//	for (int i=0;i<numCameras;i++)
-	//	{
-	//		error=ppCameras[i]->StopCapture(); //有问题
-	//		error=ppCameras[i]->Disconnect();
-	//		if (error != PGRERROR_OK)
-	//		{
-	//			::MessageBox(NULL, _T("相机停止工作错误！"), _T("警告"), MB_ICONWARNING | MB_OK);
-	//			is_start=true;
-	//		}
-	//	}
-	//	
-	//}
 }
 
 //显示图像线程
@@ -548,34 +532,46 @@ UINT CaptureThread(LPVOID pParam)
 	{
 		WaitForSingleObject(pDlg->g_hEvent,INFINITE);
 
-		if(grab0&&grab1)
+		if (!pDlg->isQuited)
 		{
+			if(grab0&&grab1)
+			{
 
-			CRect rect ;
-			pDlg->GetClientRect(rect);
-			if (pDlg->m_bFullScreen)
-			{
-				//pDib->ShowVideo(m_pImageBufferFinal,rect.right-rect.left,rect.bottom-rect.top,0,0) ;
-				
-				TimeMeasure::MeasureEnd();
-			}else
-			{
-				pDib->ShowVideo(pImageBuf[0],180,rect.bottom-rect.top,180,0);
-				pDib->ShowVideo(pImageBuf[1],180,rect.bottom-rect.top,360,0);
-				TimeMeasure::MeasureEnd();
+				CRect rect ;
+				pDlg->GetClientRect(rect);
+				if (pDlg->m_bFullScreen)
+				{
+					//pDib->ShowVideo(m_pImageBufferFinal,rect.right-rect.left,rect.bottom-rect.top,0,0) ;
+
+					TimeMeasure::MeasureEnd();
+				}else
+				{
+					pDib->ShowVideo(pImageBuf[0],180,rect.bottom-rect.top,180,0);
+					pDib->ShowVideo(pImageBuf[1],180,rect.bottom-rect.top,360,0);
+					TimeMeasure::MeasureEnd();
+				}
+
+				SetEvent(pDlg->g_hEvent0);
+				SetEvent(pDlg->g_hEvent1);
+
 			}
-
-			SetEvent(pDlg->g_hEvent0);
-			SetEvent(pDlg->g_hEvent1);
-		
 		}
+		else
+		{
+			pDlg->m_bCapture = false;
+			break;
+		}	
 		
 	}
 	//delete []m_pImageBufferFinal;
 
-	delete[] pImageBuf;
-	delete pDib;
-	pDlg->ReleaseDC(pDc);
+	//delete[] pImageBuf;
+	//delete pDib;
+	//pDlg->ReleaseDC(pDc);
+
+	//pDlg->StopSystem();
+	pDlg->flag_quit = 3;
+
 	return 0 ;
 }
 //相机获取的图像数据进行转换为cv::Mat,并对图像进行180度旋转
@@ -597,16 +593,19 @@ Mat ConverData(int num,Camera** pCamera,Mat pFinalImage,Image* pImage,Image* pCo
 
 	return rotateImg;
 }
-void CMultiViewDlg::StopSystem(int num)
+void CMultiViewDlg::StopSystem()
 {
 	Error   error;
-	
-	error=ppCameras[num]->StopCapture(); //有问题
-	error=ppCameras[num]->Disconnect();
-	if (error != PGRERROR_OK)
+
+	for (int i=0;i<numCameras;i++)
 	{
-		::MessageBox(NULL, _T("相机停止工作错误！"), _T("警告"), MB_ICONWARNING | MB_OK);
-		is_start=true;
+		error=ppCameras[i]->StopCapture(); //有问题
+		error=ppCameras[i]->Disconnect();
+		if (error != PGRERROR_OK)
+		{
+				::MessageBox(NULL, _T("相机停止工作错误！"), _T("警告"), MB_ICONWARNING | MB_OK);
+		}
+		ppCameras[i] = 0;
 	}
 	
 }
@@ -632,9 +631,7 @@ UINT CaptureThread0(LPVOID pParam)
 		ResetEvent(pDlg->g_hEvent0);
 	
 	}
-
-	//pDlg->StopSystem(0);
-
+	
 	return 0;
 }
 
@@ -663,14 +660,18 @@ UINT CaptureThread1(LPVOID pParam)
 	}
 
 	//pDlg->StopSystem(1);
+	
+	SetEvent(pDlg->g_hEvent);
+	
 
 	return 0;
 }
 
 void CMultiViewDlg::StartCapture()
 {
+	flag_quit = 2;
 
-	m_bCapture=TRUE ;
+	m_bCapture = true ;
 	m_bCaptureThread0 = true;
 	m_bCaptureThread1 = true;
 
@@ -691,6 +692,7 @@ void CMultiViewDlg::StartCapture()
 void CMultiViewDlg::OnBnClickedBtnStart()
 {
 	// TODO: Add your control notification handler code here
+	flag_quit = 1;
 
 	Error   error;
 	if(is_open==false)
@@ -750,6 +752,27 @@ void CMultiViewDlg::OnBnClickedBtnGrap()
 	else
 	{
 		::MessageBox(NULL, _T("请开启相机！"), _T("警告"), MB_ICONWARNING | MB_OK);
+	}
+	
+}
+
+
+void CMultiViewDlg::OnBnClickedBtnOut()
+{
+	// TODO: Add your control notification handler code here
+	
+	if (isQuited)
+	{
+		StopSystem();
+	}
+
+	if (flag_quit == 1 || flag_quit == 3)
+	{
+		CDialogEx::OnCancel();
+	}
+	else if (flag_quit == 2)
+	{
+		::MessageBox(NULL, _T("请先点击“停止”按钮，再点击“退出”按钮"), _T("警告"), MB_ICONWARNING | MB_OK);
 	}
 	
 }

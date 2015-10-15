@@ -28,9 +28,13 @@ public:
 	//FlyCaptureImage   m_imageProcessed[8];//转换后的数据
 	//int m_cameraInfo[8];//相机序列号
 	//CameraGUIContext m_guicontext;
+
+	int flag_quit; //flag_quit = 1 时，为未实时显示图像数据状态；flag_quit = 3 时，为实时显示图像数据状态；flag_quit = 3 时，为所有子线程已经安全退出状态。
+
 	bool is_start;
 	bool is_open;
 
+	bool isQuited;
 	bool m_bCapture ;
 	bool m_bCaptureThread0;
 	bool m_bCaptureThread1;
@@ -77,9 +81,12 @@ public:
 	afx_msg void OnBnClickedBtnGrap();
 
 private:
+
 public:
 	CBinocularCamera* BinocularCamera;
 
-	void StopSystem(int num);
+	void StopSystem();
 	
+	
+	afx_msg void OnBnClickedBtnOut();
 };
