@@ -1,0 +1,66 @@
+﻿Build started 2012/6/9 15:47:29.
+Environment at start of build:
+MSBuildExtensionsPath32 = C:\Program Files (x86)\MSBuild
+MSBuildExtensionsPath64 = C:\Program Files\MSBuild
+MSBuildExtensionsPath = C:\Program Files (x86)\MSBuild
+LOCALAPPDATA = C:\Users\Administrator\AppData\Local
+ALLUSERSPROFILE = C:\ProgramData
+APPDATA = C:\Users\Administrator\AppData\Roaming
+CommonProgramFiles = C:\Program Files (x86)\Common Files
+CommonProgramW6432 = C:\Program Files\Common Files
+COMPUTERNAME = WIN-FUG1F8GCRJ0
+ComSpec = C:\Windows\system32\cmd.exe
+FP_NO_HOST_CHECK = NO
+HOMEDRIVE = C:
+HOMEPATH = \Users\Administrator
+LOGONSERVER = \\WIN-FUG1F8GCRJ0
+NUMBER_OF_PROCESSORS = 12
+OS = Windows_NT
+Path = C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;d:\Program Files\MATLAB\R2009a\bin;d:\Program Files\MATLAB\R2009a\bin\win64;C:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\DTS\Binn\;C:\Program Files\Point Grey Research\FlyCapture2\bin64;D:\Program Files\opencv\build\x64\vc10\bin;D:\Program Files\opencv\build;D:\Program Files\opencv\include;D:\Program Files\Point Grey Research\FlyCapture2\bin64;D:\Program Files\opencv\build\common\tbb\intel64\vc10
+PATHEXT = .COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC
+PROCESSOR_ARCHITECTURE = x86
+PROCESSOR_ARCHITEW6432 = AMD64
+PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 44 Stepping 2, GenuineIntel
+PROCESSOR_LEVEL = 6
+PROCESSOR_REVISION = 2c02
+ProgramData = C:\ProgramData
+ProgramFiles = C:\Program Files (x86)
+ProgramW6432 = C:\Program Files
+PSModulePath = C:\Windows\system32\WindowsPowerShell\v1.0\Modules\
+PUBLIC = C:\Users\Public
+SESSIONNAME = Console
+SystemDrive = C:
+SystemRoot = C:\Windows
+TEMP = C:\Users\ADMINI~1\AppData\Local\Temp
+TMP = C:\Users\ADMINI~1\AppData\Local\Temp
+USERDOMAIN = WIN-FUG1F8GCRJ0
+USERNAME = Administrator
+USERPROFILE = C:\Users\Administrator
+VisualStudioDir = C:\Users\Administrator\Documents\Visual Studio 2010
+VS100COMNTOOLS = C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools\
+windir = C:\Windows
+__COMPAT_LAYER = ElevateCreateProcess
+
+     1>Project "E:\李春华\工作备份\MultiView\MultiView.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Touching "Debug\MultiView.unsuccessfulbuild".
+       ClCompile:
+         All outputs are up-to-date.
+         All outputs are up-to-date.
+       ResourceCompile:
+         All outputs are up-to-date.
+       ManifestResourceCompile:
+         All outputs are up-to-date.
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\李春华\工作备份\MultiView\Debug\MultiView.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Program Files\Point Grey Research\PGR FlyCapture\lib64" PGRFlyCapture.lib vfw32.lib pgrflycapturegui.lib /MANIFEST /ManifestFile:"Debug\MultiView.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"E:\李春华\工作备份\MultiView\Debug\MultiView.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\李春华\工作备份\MultiView\Debug\MultiView.lib" /MACHINE:X86 Debug\MultiView.res
+         Debug\MultiView.exe.embed.manifest.res
+         Debug\DibShow.obj
+         Debug\MultiView.obj
+         Debug\MultiViewDlg.obj
+         Debug\stdafx.obj
+     1>LINK : fatal error LNK1104: cannot open file 'PGRFlyCapture.lib'
+     1>Done Building Project "E:\李春华\工作备份\MultiView\MultiView.vcxproj" (build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:00.12
