@@ -45,10 +45,13 @@
     <ClInclude Include="TimeMeasure.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BinocularCamera.h">
+    <ClInclude Include="global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="global.h">
+    <ClInclude Include="StereoCalibrate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="global-SC.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -68,7 +71,7 @@
     <ClCompile Include="TimeMeasure.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BinocularCamera.cpp">
+    <ClCompile Include="StereoCalibrate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

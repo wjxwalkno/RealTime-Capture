@@ -3,13 +3,17 @@
 //
 
 #pragma once
+#include <windows.h>
+#include "DibShow.h"
+#include <opencv2/opencv.hpp>
 #include "FlyCapture2.h"
 #include "Error.h"
 #include "FlyCapture2Defs.h"
 
 #include "FlyCapture2GUI.h"
-#include "BinocularCamera.h"
-#include <opencv2/opencv.hpp>
+#include "StereoCalibrate.h"
+//#include "BinocularCamera.h"
+
 using namespace FlyCapture2;
 using namespace cv;
 // CMultiViewDlg dialog
@@ -33,6 +37,8 @@ public:
 
 	bool is_start;
 	bool is_open;
+	bool doSC;
+	bool finishSC;
 
 	bool isQuited;
 	bool m_bCapture ;
@@ -42,10 +48,12 @@ public:
 	HANDLE hThread;
 	HANDLE hThread0;
 	HANDLE hThread1;
+	HANDLE hThread2;
 
 	HANDLE g_hEvent;
 	HANDLE g_hEvent0;
 	HANDLE g_hEvent1;
+	HANDLE g_hEvent2;
 
 	CvMat T1_cv;
 	CvMat T2_cv;
@@ -83,10 +91,13 @@ public:
 private:
 
 public:
-	CBinocularCamera* BinocularCamera;
+	//CBinocularCamera* BinocularCamera;
+
+	CStereoCalibrate* StereoCalibrate;
 
 	void StopSystem();
 	
 	
 	afx_msg void OnBnClickedBtnOut();
+	afx_msg void OnBnClickedBtnSc();
 };

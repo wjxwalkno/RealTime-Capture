@@ -1,9 +1,24 @@
-#include "stdafx.h"
+#pragma once
+
+#include <windows.h>
+
 #include "DibShow.h"
+
+#include "FlyCapture2.h"
+#include "Error.h"
+#include "FlyCapture2Defs.h"
+
+#include "FlyCapture2GUI.h"
+#include <opencv2/opencv.hpp>
+
+using namespace FlyCapture2;
+using namespace cv;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
+
+
 
 unsigned int numCameras = 2;
 BusManager busMgr;
@@ -58,5 +73,9 @@ const int x_off=1140;
 const int y_off=880;
 const int remap_param=CV_INTER_LINEAR;
 const int resize_param=CV_INTER_LINEAR;
+
+
+
+
 
 

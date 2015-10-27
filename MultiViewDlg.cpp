@@ -6,9 +6,9 @@
 #include "MultiView.h"
 #include "MultiViewDlg.h"
 #include "afxdialogex.h"
-#include "DibShow.h"
-#include "TimeMeasure.h"
 #include "global.h"
+#include "TimeMeasure.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -250,9 +250,13 @@ CMultiViewDlg::CMultiViewDlg(CWnd* pParent /*=NULL*/)
 	//BinocularCamera->isOpen = false;
 	//BinocularCamera->isStart = true;
 
+	StereoCalibrate = new CStereoCalibrate();
+
 	is_open = false;
 	is_start = false;
+	doSC = false;
 	isQuited = false;
+	finishSC = false;
 
 	flag_quit = 1;
 
@@ -276,6 +280,7 @@ BEGIN_MESSAGE_MAP(CMultiViewDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_START, &CMultiViewDlg::OnBnClickedBtnStart)
 	ON_BN_CLICKED(IDC_BTN_GRAP, &CMultiViewDlg::OnBnClickedBtnGrap)
 	ON_BN_CLICKED(IDC_BTN_OUT, &CMultiViewDlg::OnBnClickedBtnOut)
+	ON_BN_CLICKED(IDC_BTN_SC, &CMultiViewDlg::OnBnClickedBtnSc)
 END_MESSAGE_MAP()
 // CMultiViewDlg message handlers
 
@@ -373,6 +378,8 @@ void CMultiViewDlg::OnBnClickedBtnQuit()
 	isQuited = true;
 	m_bCaptureThread0 = false;
 	m_bCaptureThread1 = false;
+	doSC = false;
+	finishSC = false;
 	//m_bCapture = false;
 	//SetEvent(g_hEvent);
 	//SetEvent(g_hEvent0);
@@ -429,11 +436,17 @@ void CMultiViewDlg::OnBnClickedBtnInitsystem()
 	// TODO: Add your control notification handler code here
 	flag_quit = 1;
 
-	for(int i=0;i<numCameras;i++)
+	for(int i=0;i<numCameras ;i++)
 	{
 		pImageBuf[i]=new BYTE [1920*1080*3];
 		memset(pImageBuf[i], 0x0, 1920*1080*3);
 	}
+
+	//pImageBuf[2],pImageBuf[3]存储校正后的图像
+	pImageBuf[2]=new BYTE [1920*1080*3];
+	memset(pImageBuf[2], 0x0, 1920*1080*3);
+	pImageBuf[3]=new BYTE [1920*1080*3];
+	memset(pImageBuf[3], 0x0, 1920*1080*3);
 
 	if(is_open == false)
 	{
@@ -442,6 +455,7 @@ void CMultiViewDlg::OnBnClickedBtnInitsystem()
 
 		Error   error;	
 		error = busMgr.GetNumOfCameras(&numCameras);
+		numCameras = 2;
 
 		for ( unsigned int i = 0; i < numCameras; i++)
 		{
@@ -546,8 +560,13 @@ UINT CaptureThread(LPVOID pParam)
 					TimeMeasure::MeasureEnd();
 				}else
 				{
-					pDib->ShowVideo(pImageBuf[0],180,rect.bottom-rect.top,180,0);
-					pDib->ShowVideo(pImageBuf[1],180,rect.bottom-rect.top,360,0);
+					pDib->ShowVideo(pImageBuf[0],300,rect.bottom-rect.top,180,0);
+					pDib->ShowVideo(pImageBuf[1],300,rect.bottom-rect.top,480,0);
+					if (pDlg->finishSC)
+					{
+						pDib->ShowVideo(pImageBuf[2],300,rect.bottom-rect.top,780,0);
+						pDib->ShowVideo(pImageBuf[3],300,rect.bottom-rect.top,1080,0);
+					}
 					TimeMeasure::MeasureEnd();
 				}
 
@@ -626,7 +645,11 @@ UINT CaptureThread0(LPVOID pParam)
 		resize(cvImageBuf0,cvImageBuf_final0,cvSize(1920,1080),0.0,0.0,resize_param);
 		
 		pImageBuf[0] = (BYTE*)cvImageBuf_final0.data;
-		grab0=1;
+		
+		if (pDlg->finishSC)
+			pImageBuf[2] = pDlg->StereoCalibrate->SCProcessing(1,pImageBuf[0]);
+
+		grab0 = 1;
 
 		ResetEvent(pDlg->g_hEvent0);
 	
@@ -654,7 +677,11 @@ UINT CaptureThread1(LPVOID pParam)
 		resize(cvImageBuf1,cvImageBuf_final1,cvSize(1920,1080),0.0,0.0,resize_param);	
 
 		pImageBuf[1]=(BYTE*)cvImageBuf_final1.data;
-		grab1=1;
+		
+		if (pDlg->finishSC)
+			pImageBuf[3] = pDlg->StereoCalibrate->SCProcessing(2,pImageBuf[1]);
+		
+		grab1 = 1;
 
 		ResetEvent(pDlg->g_hEvent1);
 	}
@@ -667,6 +694,35 @@ UINT CaptureThread1(LPVOID pParam)
 	return 0;
 }
 
+//标定-校正操作
+UINT CaptureThread2(LPVOID pParam)
+{
+	CMultiViewDlg *pDlg=(CMultiViewDlg*) pParam ;
+
+	Mat cvImageBuf2 = cvCreateImage(cvSize(1280,960),8,3);
+	Mat tt2;
+	Mat cvImageBuf_final2=cvCreateImage(cvSize(1920,1080),8,3);
+
+	char* tempPath;
+
+	while(pDlg->doSC)
+	{
+		WaitForSingleObject(pDlg->g_hEvent2,INFINITE);
+
+		pDlg->StereoCalibrate->Calibrate();
+		pDlg->StereoCalibrate->GetMatrix();
+		pDlg->StereoCalibrate->Rectify();
+		
+		pDlg->finishSC = false;
+		
+		ResetEvent(pDlg->g_hEvent2);
+		
+	}
+
+	return 0;
+}
+
+
 void CMultiViewDlg::StartCapture()
 {
 	flag_quit = 2;
@@ -674,15 +730,18 @@ void CMultiViewDlg::StartCapture()
 	m_bCapture = true ;
 	m_bCaptureThread0 = true;
 	m_bCaptureThread1 = true;
+	doSC = true;
 
-	g_hEvent=CreateEvent(NULL,TRUE,FALSE,NULL);
-	g_hEvent0=CreateEvent(NULL,TRUE,FALSE,NULL);
-	g_hEvent1=CreateEvent(NULL,TRUE,FALSE,NULL);
+	g_hEvent = CreateEvent(NULL,TRUE,FALSE,NULL);
+	g_hEvent0 = CreateEvent(NULL,TRUE,FALSE,NULL);
+	g_hEvent1 = CreateEvent(NULL,TRUE,FALSE,NULL);
+	g_hEvent2 = CreateEvent(NULL,TRUE,FALSE,NULL);
 	
 	hThread=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)CaptureThread,(void*)this,0,NULL);//主控线程
 
 	hThread0=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)CaptureThread0,(void*)this,0,NULL);
 	hThread1=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)CaptureThread1,(void*)this,0,NULL);
+	hThread2=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)CaptureThread2,(void*)this,0,NULL);
 	
 	SetEvent(g_hEvent);
 	SetEvent(g_hEvent0);
@@ -741,12 +800,15 @@ void CMultiViewDlg::OnBnClickedBtnGrap()
 			
 			char tempFilename[256];
 			
-			sprintf(tempFilename, "%scamera%d_%d.%s", "c:\\tmp1\\",i,j_num,"bmp");
+			sprintf(tempFilename, "camera%d_%d.%s", i,j_num,"bmp");
 			
 			error = convertedImage.Save(tempFilename );//保存图像
 			
 		}
 		::MessageBox(NULL, _T("已捕获图像！"), _T("警告"), MB_ICONWARNING | MB_OK);
+		
+		
+		
 		j_num++;
 	}
 	else
@@ -775,4 +837,12 @@ void CMultiViewDlg::OnBnClickedBtnOut()
 		::MessageBox(NULL, _T("请先点击“停止”按钮，再点击“退出”按钮"), _T("警告"), MB_ICONWARNING | MB_OK);
 	}
 	
+}
+
+
+void CMultiViewDlg::OnBnClickedBtnSc()
+{
+	// TODO: Add your control notification handler code here
+//	if (6 == j_num)
+		SetEvent(g_hEvent2);
 }
