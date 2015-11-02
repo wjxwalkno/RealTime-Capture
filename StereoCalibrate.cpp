@@ -22,7 +22,8 @@ void CStereoCalibrate::Initial()
 	//right_intrinsic = cvCreateMat(3,3,CV_64FC1);
 	//right_distortion = cvCreateMat(5,1,CV_64FC1);
 	//right_translation_vector_1 = cvCreateMat(3,1,CV_64FC1);
-
+	//m_pImageBufferFinal[0]=new BYTE [1920*1080*3];
+	//m_pImageBufferFinal[1]=new BYTE [1920*1080*3];
 
 	left_rotation_matrix = cvCreateMat(3,3,CV_64FC1);
 
@@ -51,12 +52,10 @@ void CStereoCalibrate::Initial()
 	fptr=NULL;
 }
 //标定+校正处理
-BYTE  * CStereoCalibrate::SCProcessing(int numCamera,PBYTE sourceImage)
+void CStereoCalibrate::SCProcessing(int numCamera,PBYTE sourceImage,PBYTE targetImage)
 {
-	BYTE  *m_pImageBufferFinal=new BYTE [1920*1080*3];
-	memset(m_pImageBufferFinal,0,1920*1080*3);
-
-	cv::Mat cvImageBuf = cvCreateImage(cvSize(1920,1080),8,3);
+	//BYTE *m_pImageBufferFinal=new BYTE [1920*1080*3];
+	//memset(m_pImageBufferFinal,0,1920*1080*3);
 	
 	int num = numCamera - 1;
 	int orig_height = 960;
@@ -82,65 +81,22 @@ BYTE  * CStereoCalibrate::SCProcessing(int numCamera,PBYTE sourceImage)
 	for(int i = 0;i < 1920;i++)
 		for(int j = 0;j < 1080;j++)
 		{
-			//roi_to[i*1920+j][0]=j*1140/1920.0;
-			//roi_to[i*1920+j][1]=i*860/1080.0;
-			////70+roi_to[i*1920+j][0]代替了j    (50+roi_to[i*1920+j][1])代替i
-			//map_0[0][i*1920+j][0]=((70+roi_to[i*1920+j][0])*t_inv[0][0]+(50+roi_to[i*1920+j][1])*t_inv[0][1]+t_inv[0][2])/((70+roi_to[i*1920+j][0])*t_inv[2][0]+(50+roi_to[i*1920+j][1])*t_inv[2][1]+t_inv[2][2]);//
-			//map_0[0][i*1920+j][1]=((70+roi_to[i*1920+j][0])*t_inv[1][0]+(50+roi_to[i*1920+j][1])*t_inv[1][1]+t_inv[1][2])/((70+roi_to[i*1920+j][0])*t_inv[2][0]+(50+roi_to[i*1920+j][1])*t_inv[2][1]+t_inv[2][2]);
+			
 			x = (i * t_inv[0][0] + j * t_inv[0][1] + t_inv[0][2])/(i * t_inv[2][0]+j * t_inv[2][1] + t_inv[2][2]);
 			y = (i * t_inv[1][0] + j * t_inv[1][1] + t_inv[1][2])/(i * t_inv[2][0]+j * t_inv[2][1] + t_inv[2][2]);
 
 			if ((x < 1920) && (x >= 0) && (y < 1080) && (y >= 0))
 			{
-				m_pImageBufferFinal[((new_height - j - 1) * new_width + i) * 3 + 0] = sourceImage[(y * new_width + x) * 3 + 0];
-				m_pImageBufferFinal[((new_height - j - 1) * new_width + i) * 3 + 1] = sourceImage[(y * new_width + x) * 3 + 1];
-				m_pImageBufferFinal[((new_height - j - 1) * new_width + i) * 3 + 2] = sourceImage[(y * new_width + x) * 3 + 2];
+				targetImage[(j * new_width + i) * 3 + 0] = sourceImage[(y * new_width + x) * 3 + 0];
+				targetImage[(j * new_width + i) * 3 + 1] = sourceImage[(y * new_width + x) * 3 + 1];
+				targetImage[(j * new_width + i) * 3 + 2] = sourceImage[(y * new_width + x) * 3 + 2];
 			}	
 
 		}
 
-	/*float g_a,g_b,g_c,g_d,g_e,g_f;
-	float j_new,i_new;
 	
-	for(int i=0;i<1080;i++)
-	{
-		int n = 1080-i-1;
 
-		for(int j=0;j<1920;j++)
-		{		
-			j_new=map_0[num&7][i*1920+j][0];
-			i_new=map_0[num&7][i*1920+j][1];
-			g_b=sourceImage[((int(i_new)+1)*1280+(int(j_new)+1))*3+2];
-			g_a=sourceImage[((int(i_new)+1)*1280+int(j_new))*3+2];
-			g_d=sourceImage[(int(i_new)*1280+(int(j_new)+1))*3+2];
-			g_c=sourceImage[(int(i_new)*1280+int(j_new))*3+2];
-			g_e=(j_new-int(j_new))*(g_b-g_a)+g_a;
-			g_f=(j_new-int(j_new))*(g_d-g_c)+g_c;
-			m_pImageBufferFinal[(n*1920+j)*3+2] = (i_new-int(i_new))*(g_e-g_f)+g_f;num++;
-
-			j_new=map_0[num&7][i*1920+j][0];
-			i_new=map_0[num&7][i*1920+j][1];
-			g_b=sourceImage[((int(i_new)+1)*1280+(int(j_new)+1))*3+1];
-			g_a=sourceImage[((int(i_new)+1)*1280+int(j_new))*3+1];
-			g_d=sourceImage[(int(i_new)*1280+(int(j_new)+1))*3+1];
-			g_c=sourceImage[(int(i_new)*1280+int(j_new))*3+1];
-			g_e=(j_new-int(j_new))*(g_b-g_a)+g_a;
-			g_f=(j_new-int(j_new))*(g_d-g_c)+g_c;
-			m_pImageBufferFinal[(n*1920+j)*3+1] = (i_new-int(i_new))*(g_e-g_f)+g_f;num++;
-
-			j_new=map_0[num&7][i*1920+j][0];
-			i_new=map_0[num&7][i*1920+j][1];
-			g_b=sourceImage[((int(i_new)+1)*1280+(int(j_new)+1))*3+0];
-			g_a=sourceImage[((int(i_new)+1)*1280+int(j_new))*3+0];
-			g_d=sourceImage[(int(i_new)*1280+(int(j_new)+1))*3+0];
-			g_c=sourceImage[(int(i_new)*1280+int(j_new))*3+0];
-			g_e=(j_new-int(j_new))*(g_b-g_a)+g_a;
-			g_f=(j_new-int(j_new))*(g_d-g_c)+g_c;
-			m_pImageBufferFinal[(n*1920+j)*3+0] = (i_new-int(i_new))*(g_e-g_f)+g_f;num++;
-		}
-	}*/
-
-	return m_pImageBufferFinal;
+	//return m_pImageBufferFinal;
 
 }
 //标定过程
@@ -338,158 +294,92 @@ void CStereoCalibrate::GetMatrix()
 void CStereoCalibrate::Rectify()
 {
 	double Po1_1[3][4] = { left_rotation_matrix->data.db[0], left_rotation_matrix->data.db[1], left_rotation_matrix->data.db[2], left_translation_vector_1->data.db[0],
-		                   left_rotation_matrix->data.db[3], left_rotation_matrix->data.db[4], left_rotation_matrix->data.db[5], left_translation_vector_1->data.db[1],
-		                   left_rotation_matrix->data.db[6], left_rotation_matrix->data.db[7], left_rotation_matrix->data.db[8], left_translation_vector_1->data.db[2]
-	                     };
-	
-	CvMat* Po1_1_1  = cvCreateMat(3, 4, CV_64FC1);
+		left_rotation_matrix->data.db[3], left_rotation_matrix->data.db[4], left_rotation_matrix->data.db[5], left_translation_vector_1->data.db[1],
+		left_rotation_matrix->data.db[6], left_rotation_matrix->data.db[7], left_rotation_matrix->data.db[8], left_translation_vector_1->data.db[2]
+	};
+	CvMat* Po1_1_1 = cvCreateMat(3, 4, CV_64FC1);
 	cvInitMatHeader(Po1_1_1, 3, 4, CV_64FC1, Po1_1);
-	
 	CvMat* Po1 = cvCreateMat(3, 4, CV_64FC1);
 	cvMatMul(left_intrinsic, Po1_1_1, Po1);
 
 	double Po2_1[3][4] = { right_rotation_matrix->data.db[0], right_rotation_matrix->data.db[1], right_rotation_matrix->data.db[2], right_translation_vector_1->data.db[0],
-                     right_rotation_matrix->data.db[3], right_rotation_matrix->data.db[4], right_rotation_matrix->data.db[5], right_translation_vector_1->data.db[1],
-                     right_rotation_matrix->data.db[6], right_rotation_matrix->data.db[7], right_rotation_matrix->data.db[8], right_translation_vector_1->data.db[2]
-
-	                };
+		right_rotation_matrix->data.db[3], right_rotation_matrix->data.db[4], right_rotation_matrix->data.db[5], right_translation_vector_1->data.db[1],
+		right_rotation_matrix->data.db[6], right_rotation_matrix->data.db[7], right_rotation_matrix->data.db[8], right_translation_vector_1->data.db[2]
+	};
 	CvMat* Po2_1_1 = cvCreateMat(3, 4, CV_64FC1);
 	CvMat* Po2 = cvCreateMat(3, 4, CV_64FC1);
 	cvInitMatHeader(Po2_1_1, 3, 4, CV_64FC1, Po2_1);
 	cvMatMul(right_intrinsic, Po2_1_1, Po2);
-	
-	CvMat* Po1_1_3=cvCreateMat(3, 3, CV_64FC1);
-	
-	double Po1_1_3a[3][3] = { Po1->data.db[0], Po1->data.db[1], Po1->data.db[2],
-		Po1->data.db[4], Po1->data.db[5], Po1->data.db[6],
-		Po1->data.db[8], Po1->data.db[9], Po1->data.db[10]
-	};
-	
-	cvInitMatHeader(Po1_1_3, 3, 3, CV_64FC1, Po1_1_3a);	
-	CvMat* Po1_4 = cvCreateMat(3, 1, CV_64FC1);
-	double Po1_4a[3][1] = { Po1->data.db[3], 
-		Po1->data.db[7],
-		Po1->data.db[11]
-	};
-	cvInitMatHeader(Po1_4, 3, 1, CV_64FC1, Po1_4a);
-	
-	cvInvert(Po1_1_3, Po1_1_3, CV_LU);//求逆
-	CvMat* c1 = cvCreateMat(3, 1, CV_64FC1);
-	cvMatMul(Po1_1_3, Po1_4, c1);
-	cvConvertScale(c1, c1, -1, 0);
-	
-	CvMat* Po2_1_3 = cvCreateMat(3, 3, CV_64FC1);	
+
+	CvMat* k_add = cvCreateMat(3, 3, CV_64FC1);
+	CvMat* k_avg = cvCreateMat(3, 3, CV_64FC1);
+	cvAdd(left_intrinsic, right_intrinsic, k_add, NULL);
+	cvConvertScale(k_add, k_avg, 0.5, 0);
+
+	CvMat* Po2_1_3 = cvCreateMat(3, 3, CV_64FC1);
 	double Po2_1_3a[3][3] = { Po2->data.db[0], Po2->data.db[1], Po2->data.db[2],
 		Po2->data.db[4], Po2->data.db[5], Po2->data.db[6],
 		Po2->data.db[8], Po2->data.db[9], Po2->data.db[10]
 	};
+
 	cvInitMatHeader(Po2_1_3, 3, 3, CV_64FC1, Po2_1_3a);
+
 	CvMat* Po2_4 = cvCreateMat(3, 1, CV_64FC1);
 	double Po2_4a[3][1] = { Po2->data.db[3],
 		Po2->data.db[7],
 		Po2->data.db[11]
 	};
 	cvInitMatHeader(Po2_4, 3, 1, CV_64FC1, Po2_4a);
-	
+
 	cvInvert(Po2_1_3, Po2_1_3, CV_LU);
 	CvMat* c2 = cvCreateMat(3, 1, CV_64FC1);
 	cvMatMul(Po2_1_3, Po2_4, c2);
 	cvConvertScale(c2, c2, -1, 0);
-	
-	CvMat* v1 = cvCreateMat(3, 1, CV_64FC1);
-	cvSub(c1, c2, v1, NULL);
-	
-	CvMat* v2 = cvCreateMat(3, 1, CV_64FC1);
-	CvMat* left_rotation_matrix_2 = cvCreateMat(3, 1, CV_64FC1);
-	left_rotation_matrix_2 = cvGetRow(left_rotation_matrix, left_rotation_matrix_2, 2);
-	
-	cvTranspose(left_rotation_matrix_2, v2);
-	cvCrossProduct(v2,v1, v2);
-	
 
-	CvMat* v3 = cvCreateMat(3, 1, CV_64FC1);
-	cvCrossProduct(v1, v2, v3);
-	
-	CvMat*  v1_1=cvCreateMat(1, 3, CV_64FC1);
-	CvMat* v2_1 = cvCreateMat(1, 3, CV_64FC1);
-	CvMat* v3_1 = cvCreateMat(1, 3, CV_64FC1);
-	cvTranspose(v1, v1_1);
-	cvTranspose(v2, v2_1);
-	cvTranspose(v3, v3_1);
-	
-	cvConvertScale(v1_1, v1_1, 1.0 / cvNorm(v1), 0);
-	cvConvertScale(v2_1, v2_1, 1.0 / cvNorm(v2), 0);
-	cvConvertScale(v3_1, v3_1, 1.0 / cvNorm(v3), 0);
-	double R_1[3][3] = { v1_1->data.db[0], v1_1->data.db[1], v1_1->data.db[2],
-		                 v2_1->data.db[0], v2_1->data.db[1], v2_1->data.db[2],
-		                 v3_1->data.db[0], v3_1->data.db[1], v3_1->data.db[2]};
-	CvMat* R = cvCreateMat(3, 3, CV_64FC1);
-	cvInitMatHeader(R, 3, 3, CV_64FC1,R_1, CV_AUTOSTEP);
-	
-	CvMat* A = cvCreateMat(3, 3, CV_64FC1);
-	cvAdd(left_intrinsic, right_intrinsic, A, NULL);
-	cvConvertScale(A, A, 0.5, 0);
-	
+	CvMat* right_rotation_matrix_0 = cvCreateMat(1, 3, CV_64FC1);
+	CvMat* right_rotation_matrix_01 = cvCreateMat(3, 1, CV_64FC1);
+	right_rotation_matrix_0 = cvGetRow(right_rotation_matrix, right_rotation_matrix_0, 0);
+	cvTranspose(right_rotation_matrix_0, right_rotation_matrix_01);
+	cvConvertScale(right_rotation_matrix_01, right_rotation_matrix_01, 25, 0);
+	CvMat* c1 = cvCreateMat(3, 1, CV_64FC1);
+	cvSub(c2, right_rotation_matrix_01, c1, NULL);
 
-	cvmSet(A, 0, 1, 0);/*A->data.db[2] = 0;*/
-	
-	CvMat* R1_1 = cvCreateMat(3, 1, CV_64FC1);
-	cvMatMul(R, c1, R1_1);
-	cvConvertScale(R1_1, R1_1, -1, 0);
-	double Pn1_1[3][4] = { R->data.db[0], R->data.db[1], R->data.db[2], R1_1->data.db[0],
-		R->data.db[3], R->data.db[4], R->data.db[5], R1_1->data.db[1],
-		R->data.db[6], R->data.db[7], R->data.db[8], R1_1->data.db[2]
+	CvMat* t1 = cvCreateMat(3, 1, CV_64FC1);
+	cvMatMul(right_rotation_matrix, c1, t1);
+	cvConvertScale(t1, t1, -1, 0);
+
+	CvMat* t2 = cvCreateMat(3, 1, CV_64FC1);
+	cvMatMul(right_rotation_matrix, c2, t2);
+	cvConvertScale(t2, t2, -1, 0);
+
+
+	double Pn1_1_1[3][4] = { right_rotation_matrix->data.db[0], right_rotation_matrix->data.db[1], right_rotation_matrix->data.db[2], t1->data.db[0],
+		right_rotation_matrix->data.db[3], right_rotation_matrix->data.db[4], right_rotation_matrix->data.db[5], t1->data.db[1],
+		right_rotation_matrix->data.db[6], right_rotation_matrix->data.db[7], right_rotation_matrix->data.db[8], t1->data.db[2]
 	};
-	CvMat* Pn1_1_1 = cvCreateMat(3, 4, CV_64FC1);
-	cvInitMatHeader(Pn1_1_1, 3, 4, CV_64FC1, Pn1_1);
+	CvMat* Pn1_1 = cvCreateMat(3, 4, CV_64FC1);
+	cvInitMatHeader(Pn1_1, 3, 4, CV_64FC1, Pn1_1_1);
 	CvMat* Pn1 = cvCreateMat(3, 4, CV_64FC1);
-	cvMatMul(A, Pn1_1_1, Pn1);
-	
+	cvMatMul(k_avg, Pn1_1, Pn1);
 
-	CvMat* R2_1 = cvCreateMat(3, 1, CV_64FC1);
-	cvMatMul(R, c2, R2_1);
-	cvConvertScale(R2_1, R2_1, -1, 0);
-	double Pn2_1[3][4] = { R->data.db[0], R->data.db[1], R->data.db[2], R2_1->data.db[0],
-		                   R->data.db[3], R->data.db[4], R->data.db[5], R2_1->data.db[1],
-		                   R->data.db[6], R->data.db[7], R->data.db[8], R2_1->data.db[2]};
-	CvMat* Pn2_1_1 = cvCreateMat(3, 4, CV_64FC1);
-	cvInitMatHeader(Pn2_1_1, 3, 4, CV_64FC1, Pn2_1);
+
+	double Pn2_1_1[3][4] = { right_rotation_matrix->data.db[0], right_rotation_matrix->data.db[1], right_rotation_matrix->data.db[2], t2->data.db[0],
+		right_rotation_matrix->data.db[3], right_rotation_matrix->data.db[4], right_rotation_matrix->data.db[5], t2->data.db[1],
+		right_rotation_matrix->data.db[6], right_rotation_matrix->data.db[7], right_rotation_matrix->data.db[8], t2->data.db[2]
+	};
+	CvMat* Pn2_1 = cvCreateMat(3, 4, CV_64FC1);
+	cvInitMatHeader(Pn2_1, 3, 4, CV_64FC1, Pn2_1_1);
 	CvMat* Pn2 = cvCreateMat(3, 4, CV_64FC1);
-	cvMatMul(A, Pn2_1_1, Pn2);
-	
-	CvMat* T1 = cvCreateMat(3, 3, CV_64FC1);
-	CvMat* Pn1_2 = cvCreateMat(3, 3, CV_64FC1);
-	
-	double Pn1_2a[3][3] = { Pn1->data.db[0], Pn1->data.db[1], Pn1->data.db[2],
-		Pn1->data.db[4], Pn1->data.db[5], Pn1->data.db[6],
-		Pn1->data.db[8], Pn1->data.db[9], Pn1->data.db[10]
-	};
+	cvMatMul(k_avg, Pn2_1, Pn2);
 
-	cvInitMatHeader(Pn1_2, 3, 3, CV_64FC1, Pn1_2a);
-	cvMatMul(Pn1_2, Po1_1_3, T1);
-	
-	CvMat* T2 = cvCreateMat(3, 3, CV_64FC1);
-	CvMat* Pn2_2 = cvCreateMat(3, 3, CV_64FC1);
-	CvMat* Po2_inv = cvCreateMat(3, 3, CV_64FC1);
-	double Pn2_2a[3][3] = { Pn2->data.db[0], Pn2->data.db[1], Pn2->data.db[2],
-		Pn2->data.db[4], Pn2->data.db[5], Pn2->data.db[6],
-		Pn2->data.db[8], Pn2->data.db[9], Pn2->data.db[10]
-	};
 
-	cvInitMatHeader(Pn2_2, 3, 3, CV_64FC1, Pn2_2a);
-	cvMatMul(Pn2_2, Po2_1_3, T2);
-	
 	CvMat* Po1_pinv = cvCreateMat(4, 3, CV_64FC1);
-	//CvMat* H1 = cvCreateMat(3, 3, CV_64FC1);
+	
 	cvInvert(Po1, Po1_pinv, CV_SVD);
 	cvMatMul(Pn1, Po1_pinv, H[0]);
-	
+
 	CvMat* Po2_pinv = cvCreateMat(4, 3, CV_64FC1);
-	//CvMat* H2 = cvCreateMat(3, 3, CV_64FC1);
+	
 	cvInvert(Po2, Po2_pinv, CV_SVD);
 	cvMatMul(Pn2, Po2_pinv, H[1]);
-	/*cout << H[1]->data.db[0] << "		"; cout << H[1]->data.db[1] << "		"; cout << H[1]->data.db[2] << endl;
-	cout << H[1]->data.db[3] << "		"; cout << H[1]->data.db[4] << "		"; cout << H[1]->data.db[5] << endl;
-	cout << H[1]->data.db[6] << "		"; cout << H[1]->data.db[7] << "		"; cout << H[1]->data.db[8] << endl;
-	cout << endl;	*/
 }

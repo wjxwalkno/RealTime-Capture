@@ -260,6 +260,7 @@ CMultiViewDlg::CMultiViewDlg(CWnd* pParent /*=NULL*/)
 
 	flag_quit = 1;
 
+	showLineWindow = false;
 
 
 }
@@ -281,6 +282,10 @@ BEGIN_MESSAGE_MAP(CMultiViewDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_GRAP, &CMultiViewDlg::OnBnClickedBtnGrap)
 	ON_BN_CLICKED(IDC_BTN_OUT, &CMultiViewDlg::OnBnClickedBtnOut)
 	ON_BN_CLICKED(IDC_BTN_SC, &CMultiViewDlg::OnBnClickedBtnSc)
+	ON_WM_LBUTTONDOWN()
+	ON_WM_MOUSEMOVE()
+	ON_WM_LBUTTONUP()
+	ON_BN_CLICKED(IDC_GUIDEDLINE, &CMultiViewDlg::OnBnClickedGuidedline)
 END_MESSAGE_MAP()
 // CMultiViewDlg message handlers
 
@@ -314,6 +319,8 @@ BOOL CMultiViewDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
+
+	GetDlgItem(IDC_LINE)->ShowWindow(FALSE);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -584,7 +591,6 @@ UINT CaptureThread(LPVOID pParam)
 	}
 	//delete []m_pImageBufferFinal;
 
-	//delete[] pImageBuf;
 	//delete pDib;
 	//pDlg->ReleaseDC(pDc);
 
@@ -593,15 +599,20 @@ UINT CaptureThread(LPVOID pParam)
 
 	return 0 ;
 }
-//相机获取的图像数据进行转换为cv::Mat,并对图像进行180度旋转
+//相机获取的图像数据进行转换为cv::Mat
 Mat ConverData(int num,Camera** pCamera,Mat pFinalImage,Image* pImage,Image* pConvertedImage)
 {
 	pCamera[num]->RetrieveBuffer( &pImage[num]) ;
 	pImage[num].Convert( PIXEL_FORMAT_BGR, &pConvertedImage[num] );
 	pFinalImage.data = (uchar*)(pConvertedImage[num].GetData());
 
+	return pFinalImage;
+}
+//对图像进行double angle 旋转角度
+Mat Rotateimage(Mat pFinalImage,double angle)
+{
 	Point2f center = Point2f(pFinalImage.cols / 2, pFinalImage.rows / 2);  // 旋转中心
-	double angle = 180;  // 旋转角度
+
 	double scale = 1.0; // 缩放尺度
 
 	Mat rotateMat; 
@@ -633,21 +644,23 @@ UINT CaptureThread0(LPVOID pParam)
 {
 	CMultiViewDlg *pDlg = (CMultiViewDlg*) pParam ;
 	Mat cvImageBuf0 = cvCreateImage(cvSize(1280,960),8,3);//初始化矩阵头 可行！
+	Mat cvImageTempBuf0 = cvCreateImage(cvSize(1280,960),8,3);
 	Mat tt1;
 	Mat cvImageBuf_final0 = cvCreateImage(cvSize(1920,1080),8,3);
-
+	Mat cvImageBuf_tempfinal0=cvCreateImage(cvSize(1920,1080),8,3);
+	PBYTE pTemp = new BYTE[1920 * 1080 * 3];
 	while(pDlg->m_bCaptureThread0)
 	{	
 		WaitForSingleObject(pDlg->g_hEvent0,INFINITE);
 
 		cvImageBuf0 = ConverData(0,ppCameras,cvImageBuf0,image,convertedImage);
-		
+		cvImageBuf0 = Rotateimage(cvImageBuf0,180);
 		resize(cvImageBuf0,cvImageBuf_final0,cvSize(1920,1080),0.0,0.0,resize_param);
 		
-		pImageBuf[0] = (BYTE*)cvImageBuf_final0.data;
+		pImageBuf[0] = (BYTE*)cvImageBuf_final0.data;//(BYTE*)cvImageBuf_final0.data;
 		
 		if (pDlg->finishSC)
-			pImageBuf[2] = pDlg->StereoCalibrate->SCProcessing(1,pImageBuf[0]);
+			 pDlg->StereoCalibrate->SCProcessing(1,pImageBuf[0],pImageBuf[2]);
 
 		grab0 = 1;
 
@@ -665,22 +678,24 @@ UINT CaptureThread1(LPVOID pParam)
 {
 	CMultiViewDlg *pDlg=(CMultiViewDlg*) pParam ;
 	Mat cvImageBuf1 = cvCreateImage(cvSize(1280,960),8,3);
+	Mat cvImageTempBuf1 = cvCreateImage(cvSize(1280,960),8,3);
 	Mat tt2;
 	Mat cvImageBuf_final1=cvCreateImage(cvSize(1920,1080),8,3);
-
+	Mat cvImageBuf_tempfinal=cvCreateImage(cvSize(1920,1080),8,3);
+	PBYTE pTemp = new BYTE[1920 * 1080 * 3];
 	while(pDlg->m_bCaptureThread1)
 	{		
 		WaitForSingleObject(pDlg->g_hEvent1,INFINITE);
 
 		cvImageBuf1 = ConverData(1,ppCameras,cvImageBuf1,image,convertedImage);
-		
+		cvImageBuf1 = Rotateimage(cvImageBuf1,180);
 		resize(cvImageBuf1,cvImageBuf_final1,cvSize(1920,1080),0.0,0.0,resize_param);	
 
 		pImageBuf[1]=(BYTE*)cvImageBuf_final1.data;
 		
 		if (pDlg->finishSC)
-			pImageBuf[3] = pDlg->StereoCalibrate->SCProcessing(2,pImageBuf[1]);
-		
+			 pDlg->StereoCalibrate->SCProcessing(2,pImageBuf[1],pImageBuf[3]);	
+
 		grab1 = 1;
 
 		ResetEvent(pDlg->g_hEvent1);
@@ -713,7 +728,7 @@ UINT CaptureThread2(LPVOID pParam)
 		pDlg->StereoCalibrate->GetMatrix();
 		pDlg->StereoCalibrate->Rectify();
 		
-		pDlg->finishSC = false;
+		pDlg->finishSC = true;
 		
 		ResetEvent(pDlg->g_hEvent2);
 		
@@ -845,4 +860,94 @@ void CMultiViewDlg::OnBnClickedBtnSc()
 	// TODO: Add your control notification handler code here
 //	if (6 == j_num)
 		SetEvent(g_hEvent2);
+}
+
+//用于实现鼠标拖动标尺的变量
+bool mouseLDown = false;
+CPoint mousePoint;
+CRect rect;
+
+void CMultiViewDlg::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	
+	CPoint picContr;
+	GetDlgItem(IDC_LINE)->GetWindowRect(&rect);
+	ScreenToClient(&rect);//获得相对于主窗体的坐标
+	
+	if(rect.PtInRect(point) )   //鼠标是否在控件范围之内
+	{
+		mouseLDown = true;
+		mousePoint.x = point.x;
+		mousePoint.y = point.y;
+
+	}
+	
+
+
+	picContr.x=rect.TopLeft().x;
+	picContr.y=rect.TopLeft().y;
+
+	CDialogEx::OnLButtonDown(nFlags, point);
+}
+
+
+void CMultiViewDlg::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	CRect cRect;
+	CPoint picContr;
+	
+	cRect = rect;
+
+	if(mouseLDown)   //鼠标是否在控件范围之内
+	{
+		picContr.x = point.x - mousePoint.x;
+		picContr.y = point.y - mousePoint.y;
+
+		cRect.TopLeft().x = rect.TopLeft().x + picContr.x;
+		cRect.TopLeft().y = rect.TopLeft().y + picContr.y;
+
+		GetDlgItem(IDC_LINE)->SetWindowPos(NULL,cRect.TopLeft().x,cRect.TopLeft().y,0,0,SWP_NOZORDER | SWP_NOSIZE);
+		
+	}
+
+	CDialogEx::OnMouseMove(nFlags, point);
+}
+
+
+void CMultiViewDlg::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+	CRect rect;
+	CPoint picContr;
+	GetDlgItem(IDC_LINE)->GetWindowRect(&rect);
+	ScreenToClient(&rect);//获得相对于主窗体的坐标
+
+	if(rect.PtInRect(point) )   //鼠标是否在控件范围之内
+	{
+		mouseLDown = false;
+	}
+
+	CDialogEx::OnLButtonUp(nFlags, point);
+}
+
+
+void CMultiViewDlg::OnBnClickedGuidedline()
+{
+	// TODO: Add your control notification handler code here
+
+	if (showLineWindow)
+	{
+		GetDlgItem(IDC_LINE)->ShowWindow(FALSE);
+	}
+	else
+	{
+		GetDlgItem(IDC_LINE)->ShowWindow(TRUE);
+		GetDlgItem(IDC_LINE)->SetWindowPos(NULL,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE);
+	}
+	
+	showLineWindow = !showLineWindow;
 }

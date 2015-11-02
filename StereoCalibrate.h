@@ -20,7 +20,7 @@ public:
 	void Rectify();
 
 	//源图像进行校正变换
-	BYTE  * SCProcessing(int numCamera,PBYTE sourceImage);
+	void SCProcessing(int numCamera,PBYTE sourceImage,PBYTE targetImage);
 
 
 private:
@@ -59,6 +59,7 @@ private:
 	CvMat* object_points;
 	CvMat* point_counts;
 
+	//BYTE * m_pImageBufferFinal[2];
 	CvMat* H[2];
 	float map_0[8][1920*1080][2];
 	double roi_to[1920*1080][2];

@@ -39,6 +39,7 @@ public:
 	bool is_open;
 	bool doSC;
 	bool finishSC;
+	bool showLineWindow;
 
 	bool isQuited;
 	bool m_bCapture ;
@@ -100,4 +101,8 @@ public:
 	
 	afx_msg void OnBnClickedBtnOut();
 	afx_msg void OnBnClickedBtnSc();
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnBnClickedGuidedline();
 };
