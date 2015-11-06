@@ -1,4 +1,4 @@
-﻿Build started 2015/11/2 15:35:02.
+﻿Build started 2015/11/3 11:03:32.
 Environment at start of build:
 ADSK_3DSMAX_x64_2015 = C:\Program Files\Autodesk\3ds Max 2015\
 ALLUSERSPROFILE = C:\ProgramData
@@ -60,24 +60,35 @@ VBOX_MSI_INSTALL_PATH = C:\Program Files\Oracle\VirtualBox\
 VisualStudioDir = C:\Users\Administrator\Documents\Visual Studio 2010
 VS100COMNTOOLS = C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools\
 windir = C:\Windows
+__COMPAT_LAYER = ElevateCreateProcess
 
      1>Project "D:\中航项目\RealTime Capture\MultiView.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "x64\Debug\MultiView.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
          All outputs are up-to-date.
-         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\CL.exe /c /I"C:\Program Files\Point Grey Research\FlyCapture2\include\C" /I"C:\Program Files\Point Grey Research\FlyCapture2\include" /Zi /nologo /W3 /WX- /Od /D WIN32 /D _WINDOWS /D _DEBUG /D _MBCS /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"x64\Debug\MultiView.pch" /Fo"x64\Debug\\" /Fd"x64\Debug\vc100.pdb" /Gd /TP /errorReport:prompt MultiViewDlg.cpp
-         MultiViewDlg.cpp
-     1>d:\中航项目\realtime capture\DibShow.h(32): warning C4520: 'CDibShow' : multiple default constructors specified
-     1>MultiViewDlg.cpp(446): warning C4018: '<' : signed/unsigned mismatch
-     1>MultiViewDlg.cpp(614): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>MultiViewDlg.cpp(614): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>MultiViewDlg.cpp(630): warning C4018: '<' : signed/unsigned mismatch
-     1>MultiViewDlg.cpp(721): warning C4101: 'tempPath' : unreferenced local variable
-     1>MultiViewDlg.cpp(780): warning C4018: '<' : signed/unsigned mismatch
-     1>MultiViewDlg.cpp(810): warning C4018: '<' : signed/unsigned mismatch
-     1>MultiViewDlg.cpp(818): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\CL.exe /c /I"C:\Program Files\Point Grey Research\FlyCapture2\include\C" /I"C:\Program Files\Point Grey Research\FlyCapture2\include" /Zi /nologo /W3 /WX- /Od /D WIN32 /D _WINDOWS /D _DEBUG /D _MBCS /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"x64\Debug\MultiView.pch" /Fo"x64\Debug\\" /Fd"x64\Debug\vc100.pdb" /Gd /TP /errorReport:prompt StereoCalibrate.cpp
+         StereoCalibrate.cpp
+     1>StereoCalibrate.cpp(85): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+     1>StereoCalibrate.cpp(86): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+     1>StereoCalibrate.cpp(116): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371) : see declaration of 'sprintf'
+     1>StereoCalibrate.cpp(141): warning C4244: '=' : conversion from 'const int' to 'float', possible loss of data
+     1>StereoCalibrate.cpp(142): warning C4244: '=' : conversion from 'const int' to 'float', possible loss of data
+     1>StereoCalibrate.cpp(207): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371) : see declaration of 'sprintf'
+     1>StereoCalibrate.cpp(208): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371) : see declaration of 'sprintf'
+     1>StereoCalibrate.cpp(209): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371) : see declaration of 'sprintf'
+     1>StereoCalibrate.cpp(210): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371) : see declaration of 'sprintf'
+     1>StereoCalibrate.cpp(229): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371) : see declaration of 'sprintf'
+     1>StereoCalibrate.cpp(230): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(234) : see declaration of 'fopen'
+     1>StereoCalibrate.cpp(232): warning C4996: 'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(253) : see declaration of 'fscanf'
        ResourceCompile:
          All outputs are up-to-date.
        ManifestResourceCompile:
@@ -105,4 +116,4 @@ windir = C:\Windows
 
 Build succeeded.
 
-Time Elapsed 00:00:02.44
+Time Elapsed 00:00:03.23

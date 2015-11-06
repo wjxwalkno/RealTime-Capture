@@ -376,10 +376,10 @@ void CStereoCalibrate::Rectify()
 	CvMat* Po1_pinv = cvCreateMat(4, 3, CV_64FC1);
 	
 	cvInvert(Po1, Po1_pinv, CV_SVD);
-	cvMatMul(Pn1, Po1_pinv, H[0]);
+	cvMatMul(Pn1, Po1_pinv, H[1]);
 
 	CvMat* Po2_pinv = cvCreateMat(4, 3, CV_64FC1);
 	
 	cvInvert(Po2, Po2_pinv, CV_SVD);
-	cvMatMul(Pn2, Po2_pinv, H[1]);
+	cvMatMul(Pn2, Po2_pinv, H[0]);
 }
