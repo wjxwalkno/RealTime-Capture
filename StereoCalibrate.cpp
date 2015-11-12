@@ -16,15 +16,6 @@ CStereoCalibrate::~CStereoCalibrate()
 //参数初始化
 void CStereoCalibrate::Initial()
 {
-	//left_intrinsic = cvCreateMat(3,3,CV_64FC1);
-	//left_distortion = cvCreateMat(5,1,CV_64FC1);
-	//left_translation_vector_1 = cvCreateMat(3,1,CV_64FC1);
-	//right_intrinsic = cvCreateMat(3,3,CV_64FC1);
-	//right_distortion = cvCreateMat(5,1,CV_64FC1);
-	//right_translation_vector_1 = cvCreateMat(3,1,CV_64FC1);
-	//m_pImageBufferFinal[0]=new BYTE [1920*1080*3];
-	//m_pImageBufferFinal[1]=new BYTE [1920*1080*3];
-
 	left_rotation_matrix = cvCreateMat(3,3,CV_64FC1);
 
 	right_rotation_matrix = cvCreateMat(3,3,CV_64FC1);
@@ -51,6 +42,35 @@ void CStereoCalibrate::Initial()
 	gray_image = 0;
 	fptr=NULL;
 }
+
+//3D显示
+void CStereoCalibrate::ThreeDDisplay(int mode,PBYTE sourceRImage,PBYTE sourceLImage)
+{
+	int orig_height = 960;
+	int new_height = 1080;
+	int orig_width = 1280;
+	int new_width = 1920;
+
+	switch(mode)
+	{
+	case 1:   //红蓝3D显示模式
+		for(int i = 0;i < new_width;i++)
+			for(int j = 0;j < new_height;j++)
+			{					
+				sourceRImage[(j * new_width + i) * 3 + 0] = (sourceLImage[(j * new_width + i) * 3 + 0] + sourceRImage[(j * new_width + i) * 3 + 0])/2;
+				sourceRImage[(j * new_width + i) * 3 + 1] = sourceLImage[(j * new_width + i) * 3 + 1];												
+
+			}
+		 break;
+	 default:
+		 break;
+
+	}
+
+
+}
+
+
 //标定+校正处理
 void CStereoCalibrate::SCProcessing(int numCamera,PBYTE sourceImage,PBYTE targetImage)
 {

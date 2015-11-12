@@ -257,7 +257,7 @@ CMultiViewDlg::CMultiViewDlg(CWnd* pParent /*=NULL*/)
 	doSC = false;
 	isQuited = false;
 	finishSC = false;
-
+	is3DMode = false;
 	flag_quit = 1;
 
 	showLineWindow = false;
@@ -286,6 +286,7 @@ BEGIN_MESSAGE_MAP(CMultiViewDlg, CDialogEx)
 	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONUP()
 	ON_BN_CLICKED(IDC_GUIDEDLINE, &CMultiViewDlg::OnBnClickedGuidedline)
+	ON_BN_CLICKED(IDC_2DOR3D, &CMultiViewDlg::OnBnClicked2dor3d)
 END_MESSAGE_MAP()
 // CMultiViewDlg message handlers
 
@@ -387,6 +388,7 @@ void CMultiViewDlg::OnBnClickedBtnQuit()
 	m_bCaptureThread1 = false;
 	doSC = false;
 	finishSC = false;
+	is3DMode = false;
 	//m_bCapture = false;
 	//SetEvent(g_hEvent);
 	//SetEvent(g_hEvent0);
@@ -539,7 +541,7 @@ UINT CaptureThread(LPVOID pParam)
 	CMultiViewDlg *pDlg=(CMultiViewDlg*) pParam ;
 	/*Error  error;*/
 	CDibShow *pDib=new CDibShow(1920,1080) ;
-	CDC *pDc=pDlg->GetDC() ;
+	CDC *pDc=pDlg->GetDlgItem(IDC_DISPLAYVIEW1)->GetDC();//pDlg->GetDC() ;
 	pDib->SetHDC(pDc->m_hDC) ;
 
 
@@ -559,7 +561,9 @@ UINT CaptureThread(LPVOID pParam)
 			{
 
 				CRect rect ;
-				pDlg->GetClientRect(rect);
+				pDlg->GetDlgItem(IDC_DISPLAYVIEW1)->GetWindowRect(&rect);
+				pDlg->ScreenToClient(&rect);
+
 				if (pDlg->m_bFullScreen)
 				{
 					//pDib->ShowVideo(m_pImageBufferFinal,rect.right-rect.left,rect.bottom-rect.top,0,0) ;
@@ -567,18 +571,45 @@ UINT CaptureThread(LPVOID pParam)
 					TimeMeasure::MeasureEnd();
 				}else
 				{
-					pDib->ShowVideo(pImageBuf[0],300,rect.bottom-rect.top,180,0);
-					pDib->ShowVideo(pImageBuf[1],300,rect.bottom-rect.top,480,0);
-					if (pDlg->finishSC)
+					if (pDlg->is3DMode)
 					{
-						pDib->ShowVideo(pImageBuf[2],300,rect.bottom-rect.top,780,0);
-						pDib->ShowVideo(pImageBuf[3],300,rect.bottom-rect.top,1080,0);
+						pDlg->StereoCalibrate->ThreeDDisplay(1,pImageBuf[0],pImageBuf[1]);
+						if (pDlg->finishSC)
+						{							
+							pDlg->StereoCalibrate->ThreeDDisplay(1,pImageBuf[2],pImageBuf[3]);
+							pDib->ShowVideo(pImageBuf[0],rect.Width()/2,rect.bottom-rect.top,0,0);				
+							pDib->ShowVideo(pImageBuf[2],rect.Width()/2,rect.bottom-rect.top,rect.Width()/2,0);
+						}
+						else
+						{
+							pDib->ShowVideo(pImageBuf[0],rect.Width(),rect.bottom-rect.top,0,0);						
+						}
 					}
+					else
+					{
+						if (pDlg->finishSC)
+						{
+							pDib->ShowVideo(pImageBuf[0],rect.Width()/4,rect.bottom-rect.top,0,0);
+							pDib->ShowVideo(pImageBuf[1],rect.Width()/4,rect.bottom-rect.top,rect.Width()/4,0);
+							pDib->ShowVideo(pImageBuf[2],rect.Width()/4,rect.bottom-rect.top,rect.Width()/2,0);
+							pDib->ShowVideo(pImageBuf[3],rect.Width()/4,rect.bottom-rect.top,(rect.Width() * 3)/4,0);
+						}
+						else
+						{
+							pDib->ShowVideo(pImageBuf[0],rect.Width()/2,rect.bottom-rect.top,0,0);
+							pDib->ShowVideo(pImageBuf[1],rect.Width()/2,rect.bottom-rect.top,rect.Width()/2,0);
+						}
+					}
+									
+					
 					TimeMeasure::MeasureEnd();
 				}
 
-				SetEvent(pDlg->g_hEvent0);
+				grab0 = 0;
+				grab1 = 0;
+				SetEvent(pDlg->g_hEvent0);				
 				SetEvent(pDlg->g_hEvent1);
+				
 
 			}
 		}
@@ -658,7 +689,7 @@ UINT CaptureThread0(LPVOID pParam)
 		resize(cvImageBuf0,cvImageBuf_final0,cvSize(1920,1080),0.0,0.0,resize_param);
 		
 		pImageBuf[0] = (BYTE*)cvImageBuf_final0.data;//(BYTE*)cvImageBuf_final0.data;
-		
+	
 		if (pDlg->finishSC)
 			 pDlg->StereoCalibrate->SCProcessing(1,pImageBuf[0],pImageBuf[2]);
 
@@ -950,4 +981,11 @@ void CMultiViewDlg::OnBnClickedGuidedline()
 	}
 	
 	showLineWindow = !showLineWindow;
+}
+
+
+void CMultiViewDlg::OnBnClicked2dor3d()
+{
+	// TODO: Add your control notification handler code here
+	is3DMode = !is3DMode;
 }

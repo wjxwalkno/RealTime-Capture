@@ -20,7 +20,10 @@ public:
 	void Rectify();
 
 	//源图像进行校正变换
-	void SCProcessing(int numCamera,PBYTE sourceImage,PBYTE targetImage);
+	void SCProcessing(int numCamera,PBYTE sourceRImage,PBYTE sourceLImage);
+
+	//mode = 1:红蓝3D显示模式
+	void ThreeDDisplay(int mode,PBYTE sourceImage,PBYTE targetImage);
 
 
 private:
