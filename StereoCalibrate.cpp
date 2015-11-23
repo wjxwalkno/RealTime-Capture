@@ -41,6 +41,9 @@ void CStereoCalibrate::Initial()
 	image = 0;
 	gray_image = 0;
 	fptr=NULL;
+
+	writeRowLeft = cvCreateVideoWriter("Color.avi",CV_FOURCC('M','J','P','G'),25,cvSize(1920,1080),1);
+
 }
 
 //3D显示
@@ -70,6 +73,42 @@ void CStereoCalibrate::ThreeDDisplay(int mode,PBYTE sourceRImage,PBYTE sourceLIm
 
 }
 
+void CStereoCalibrate::SaveVideo(PBYTE sourceImage)
+{
+	IplImage* pImg = cvCreateImage(cvSize(1920,1080),8,3);
+	char *pImgBuf = pImg->imageData;
+	memcpy(pImgBuf,sourceImage,1920 * 1080 * 3);
+	cvWriteFrame(writeRowLeft,pImg);
+}
+
+void CStereoCalibrate::SynSideBySide(PBYTE pImg1,PBYTE pImg2,PBYTE pImg3)
+{
+
+	cv::Mat cvImageBuf_final0 = cvCreateImage(cvSize(960,1080),8,3);
+	cv::Mat cvImageBuf0=cvCreateImage(cvSize(1920,1080),8,3);
+	cv::Mat cvImageBuf_final1 = cvCreateImage(cvSize(960,1080),8,3);
+	cv::Mat cvImageBuf1=cvCreateImage(cvSize(1920,1080),8,3);
+	(BYTE*)cvImageBuf0.data = pImg1;
+	(BYTE*)cvImageBuf1.data = pImg2;
+	cv::resize(cvImageBuf0,cvImageBuf_final0,cvSize(960,1080),0.0,0.0,1);
+	cv::resize(cvImageBuf1,cvImageBuf_final1,cvSize(960,1080),0.0,0.0,1);
+
+	int WIDTH_SCALE = 960;
+	for(int i=0;i<1080;i++){
+		for(int j=0;j<WIDTH_SCALE;j++){
+			pImg3[(WIDTH_SCALE*2*i+j)*3] = cvImageBuf_final0.at<BYTE>(i,j * 3 + 0);
+			pImg3[(WIDTH_SCALE*2*i+j)*3+1] = cvImageBuf_final0.at<BYTE>(i,j * 3 + 1);
+			pImg3[(WIDTH_SCALE*2*i+j)*3+2] = cvImageBuf_final0.at<BYTE>(i,j * 3 + 2);
+			pImg3[(WIDTH_SCALE*2*i+j+WIDTH_SCALE)*3] = cvImageBuf_final1.at<BYTE>(i,j * 3 + 0);
+			pImg3[(WIDTH_SCALE*2*i+j+WIDTH_SCALE)*3+1] = cvImageBuf_final1.at<BYTE>(i,j * 3 + 1);
+			pImg3[(WIDTH_SCALE*2*i+j+WIDTH_SCALE)*3+2] = cvImageBuf_final1.at<BYTE>(i,j * 3 + 2);
+		}
+	}
+	cvImageBuf0.release();
+	cvImageBuf_final0.release();
+	cvImageBuf1.release();
+	cvImageBuf_final1.release();
+}
 
 //标定+校正处理
 void CStereoCalibrate::SCProcessing(int numCamera,PBYTE sourceImage,PBYTE targetImage)
@@ -209,6 +248,7 @@ void CStereoCalibrate::ReleaseAll()
 	cvReleaseMat(&object_points);
 	cvReleaseMat(&image_points);
 	cvReleaseMat(&point_counts);
+
 }
 
 //保存标定后的矩阵，并存放在.xml文件中

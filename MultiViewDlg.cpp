@@ -258,6 +258,7 @@ CMultiViewDlg::CMultiViewDlg(CWnd* pParent /*=NULL*/)
 	isQuited = false;
 	finishSC = false;
 	is3DMode = false;
+	finishCaptureVideo = true;
 	flag_quit = 1;
 
 	showLineWindow = false;
@@ -287,6 +288,7 @@ BEGIN_MESSAGE_MAP(CMultiViewDlg, CDialogEx)
 	ON_WM_LBUTTONUP()
 	ON_BN_CLICKED(IDC_GUIDEDLINE, &CMultiViewDlg::OnBnClickedGuidedline)
 	ON_BN_CLICKED(IDC_2DOR3D, &CMultiViewDlg::OnBnClicked2dor3d)
+	ON_BN_CLICKED(IDC_CAPTUREVIDEO, &CMultiViewDlg::OnBnClickedCapturevideo)
 END_MESSAGE_MAP()
 // CMultiViewDlg message handlers
 
@@ -456,6 +458,8 @@ void CMultiViewDlg::OnBnClickedBtnInitsystem()
 	memset(pImageBuf[2], 0x0, 1920*1080*3);
 	pImageBuf[3]=new BYTE [1920*1080*3];
 	memset(pImageBuf[3], 0x0, 1920*1080*3);
+	pSideBySideImage = new BYTE[3840*1080*3];
+	memset(pSideBySideImage, 0x0, 1920*1080*3);
 
 	if(is_open == false)
 	{
@@ -501,7 +505,7 @@ void CMultiViewDlg::OnBnClickedBtnInitsystem()
 		
 		
 	}
-		
+	
 	if(is_open == true)
 	{
 		::MessageBox(NULL, _T("初始化相机完成！"), _T("警告"), MB_ICONWARNING | MB_OK);
@@ -517,13 +521,13 @@ void CMultiViewDlg::OnBnClickedBtnStop()
 	{
 		flag_quit = 3;
 
-		SetDlgItemTextA(IDC_BTN_STOP,"开始");
+		SetDlgItemText(IDC_BTN_STOP,_T("开始"));
 		ResetEvent(g_hEvent);
 
 	}
 	else
 	{
-		SetDlgItemTextA(IDC_BTN_STOP,"暂停");
+		SetDlgItemText(IDC_BTN_STOP,_T("暂停"));
 		SetEvent(g_hEvent);
 	}
 	m_temp = !m_temp;
@@ -563,6 +567,12 @@ UINT CaptureThread(LPVOID pParam)
 				CRect rect ;
 				pDlg->GetDlgItem(IDC_DISPLAYVIEW1)->GetWindowRect(&rect);
 				pDlg->ScreenToClient(&rect);
+
+				if (!pDlg->finishCaptureVideo && pDlg->finishSC)
+				{
+					pDlg->StereoCalibrate->SynSideBySide(pImageBuf[2],pImageBuf[3],pSideBySideImage);
+					pDlg->StereoCalibrate->SaveVideo(pSideBySideImage);
+				}
 
 				if (pDlg->m_bFullScreen)
 				{
@@ -604,6 +614,8 @@ UINT CaptureThread(LPVOID pParam)
 					
 					TimeMeasure::MeasureEnd();
 				}
+
+				
 
 				grab0 = 0;
 				grab1 = 0;
@@ -977,7 +989,9 @@ void CMultiViewDlg::OnBnClickedGuidedline()
 	else
 	{
 		GetDlgItem(IDC_LINE)->ShowWindow(TRUE);
-		GetDlgItem(IDC_LINE)->SetWindowPos(NULL,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE);
+		GetDlgItem(IDC_LINE)->SetWindowPos(&wndTopMost,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE);
+		GetDlgItem(IDC_LINE)->BringWindowToTop();
+		
 	}
 	
 	showLineWindow = !showLineWindow;
@@ -988,4 +1002,22 @@ void CMultiViewDlg::OnBnClicked2dor3d()
 {
 	// TODO: Add your control notification handler code here
 	is3DMode = !is3DMode;
+}
+
+
+void CMultiViewDlg::OnBnClickedCapturevideo()
+{
+	// TODO: Add your control notification handler code here
+	finishCaptureVideo = !finishCaptureVideo;
+
+	if (finishCaptureVideo)
+	{
+		SetDlgItemText(IDC_CAPTUREVIDEO,_T("录制"));
+	}
+	else
+	{
+		SetDlgItemText(IDC_CAPTUREVIDEO,_T("结束录制"));
+
+	}
+	
 }

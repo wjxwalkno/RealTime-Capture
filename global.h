@@ -67,6 +67,7 @@ int grab5=0;
 int grab6=0;
 int grab7=0;
 PBYTE pImageBuf[8];
+PBYTE pSideBySideImage;
 const int x_start=24;
 const int y_start=40;
 const int x_off=1140;

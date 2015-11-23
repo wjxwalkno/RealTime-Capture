@@ -25,6 +25,11 @@ public:
 	//mode = 1:红蓝3D显示模式
 	void ThreeDDisplay(int mode,PBYTE sourceImage,PBYTE targetImage);
 
+	//存视频
+	void SaveVideo(PBYTE sourceImage);
+	
+	//side-by-side
+	void SynSideBySide(PBYTE pImg1,PBYTE pImg2,PBYTE pImg3);
 
 private:
 
@@ -61,6 +66,8 @@ private:
 	CvMat* image_points;//channel is 1
 	CvMat* object_points;
 	CvMat* point_counts;
+
+	CvVideoWriter* writeRowLeft;
 
 	//BYTE * m_pImageBufferFinal[2];
 	CvMat* H[2];

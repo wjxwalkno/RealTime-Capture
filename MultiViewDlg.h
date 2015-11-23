@@ -41,6 +41,7 @@ public:
 	bool finishSC;
 	bool showLineWindow;
 	bool is3DMode;
+	bool finishCaptureVideo;
 
 	bool isQuited;
 	bool m_bCapture ;
@@ -107,4 +108,5 @@ public:
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnBnClickedGuidedline();
 	afx_msg void OnBnClicked2dor3d();
+	afx_msg void OnBnClickedCapturevideo();
 };
